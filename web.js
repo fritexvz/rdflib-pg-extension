@@ -956,6 +956,8 @@ $rdf.Fetcher = function(store, timeout, async) {
             xhr.onreadystatechange = onreadystatechangeFactory(xhr);
             try {
                 xhr.open('GET', uri2, this.async);
+                xhr.setRequestHeader("X-Requested-With", "XMLHttpRequest");
+                xhr.setRequestHeader('Accept', 'text/turtle,text/n3,application/rdf+xml');
             } catch (er) {
                 return this.failFetch(xhr, "XHR open for GET failed for <"+uri2+">:\n\t" + er);
             }

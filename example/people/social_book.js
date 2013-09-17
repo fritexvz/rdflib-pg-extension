@@ -334,7 +334,6 @@ function loadUser(webId, col, depth) {
 	// If the knowledge base was not initialised fetch info from the web (if need CORS go through CORS proxy)
 	var graph = graphsCache[docURI];
 	if (!graph) {
-
 		graph = graphsCache[docURI] = new $rdf.IndexedFormula();
 		var fetch = $rdf.fetcher(graph);
 		fetch.nowOrWhenFetched(docURI, undefined, function () {

@@ -27,6 +27,13 @@ var templates = function(key, informations) {
     return tpl[key];
 };
 
+function ldp(name) { return "http://www.w3.org/ns/ldp#"+name }
+
+String.prototype.startsWith = function(inputString)
+{
+    return this.substring(0, inputString.length) === inputString
+}
+
 
 var dirname = function(path) {
     return path.replace(/\\/g, '/').replace(/\/[^\/]*\/?$/, '');
@@ -42,12 +49,12 @@ var basename = function (path) {
 
 // Check if the URI is local (http://localhost) or remote.
 var remoteUrl = function(uri) {
-    return !(uri.slice(0,7) === 'http://'  && uri.slice(7,17) === 'localhost/');
+    return !(uri.startsWith('http://localhost') || uri.startsWith('https://localhost'));
 }
 
 // Format from Unix time.
 var formatTime = function(mtime) {
-    var a = new Date(mtime * 1000);
+    var a = new Date(mtime*1);
     var months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
     var year = a.getFullYear();
     var month = months[a.getMonth()];
@@ -62,10 +69,10 @@ var formatTime = function(mtime) {
 // On document ready, use current Uri to load RDF graph from.
 $(document).ready( function() {
     // Bootstrap with remote dirUri.
-    var dirUri = 'http://stample.rww.io/';
-    if ( basename(window.location.href) !== "test.html" ) {
-        dirUri = 'http://stample.rww.io/' + basename(window.location.href) + "/";
-    }
+    var dirUri = 'https://localhost:8443/2013/';
+//    if ( basename(window.location.href) !== "test.html" ) {
+//        dirUri = 'http://stample.rww.io/' + basename(window.location.href) + "/";
+//    }
 
     // Load and render.
     loadRdfGraphAndRender(dirUri);
@@ -99,11 +106,12 @@ function renderDirectory(rootUri, graph) {
 
     //Create a SPARQL query to fetch directory informations.
     var sparqlQuery =
+        "PREFIX ldp: <http://www.w3.org/ns/ldp#> \n"+
         "PREFIX stat:  <http://www.w3.org/ns/posix/stat#> \n" +
         "PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#> \n" +
         "SELECT ?type ?size ?mt \n" +
         "WHERE {\n" +
-        "<" + rootUri + "> rdfs:member ?m . \n" +
+        "<" + rootUri + "> ldp:created ?m . \n" +
             "OPTIONAL { ?m stat:size ?size . } \n" +
             "OPTIONAL { ?m a ?type . } \n" +
             "OPTIONAL { ?m stat:mtime ?mt .} \n" +
@@ -111,6 +119,7 @@ function renderDirectory(rootUri, graph) {
 
     // Bind the query to the graph.
     var fileQuery = $rdf.SPARQLToQuery(sparqlQuery, false, graph);
+
 
     // ...
     onResult = function (result) {
@@ -122,34 +131,36 @@ function renderDirectory(rootUri, graph) {
         informations.uri = result['?m'].uri;
 
         // Get the type.
-        informations.type = "-";
-        if (result['?type'].value) {
-            var a = result['?type'].value.split('#');
-            informations.type = a[a.length - 1];
+        try {
+            informations.type =  (result['?type'].value == ldp("Container") )?"Container":"-"
+        } catch (error) {
+            informations.type = "-";
         }
 
         // Get the name from uri.
         informations.name = basename(result['?m'].uri);
 
         // Get the size.
-        informations.size = "-" ;
-        if (result['?size'].value) {
+        try {
             informations.size = result['?size'].value;
+        } catch (error) {
+            informations.size = "-";
         }
 
         // Get the modification time.
-        informations.mtime = "-" ;
-        if (result['?mt'].value) {
+        try {
             informations.mtime = formatTime(result['?mt'].value);
+        } catch(error) {
+            informations.mtime = "-" ;
         }
 
-        // if the ressource is a directory.
-        if ( informations.type ) {
-            if ( informations.type === "Directory") {
-                informations.name = informations.name + '/';
-                informations.size = "-"
-            }
-        }
+//        // if the ressource is a directory.
+//        if ( informations.type ) {
+//            if ( informations.type === "Container" && inf) {
+//                informations.name = informations.name + '/';
+//                informations.size = "-"
+//            }
+//        }
 
         // Append each member of the directory to tBody.
         var $lines = $('.lines');

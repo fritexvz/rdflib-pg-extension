@@ -39,7 +39,7 @@
 		<tr><td><input type="email" name="email" size="40" placeholder="recovery email..."></td></tr>
 		<tr class="keygen" hidden><td>Key size<br /><keygen name="SPKAC" challenge="randomchars" keytype="rsa"></td></tr>
 		<tr><td><button type="submit" onclick="hideWebID()">Create WebID</button>
-			<button type="button" onclick="hideWebID()">Cancel</button>
+			<button type="button" onclick="hideWe1bID()">Cancel</button>
 		</td></tr>
 	</form>
 </table>
@@ -217,15 +217,15 @@
 		}
 	}
 
-	$(document).observe('keydown', function(e) {
-		if (e.keyCode == 27) { // ESC
-			$('editor').hide();
-			$('wac-editor').hide();
-			hideWebID();
-			hideCloud();
-			hideImage();
-		}
-	});
+//	$(document).observe('keydown', function(e) {
+//		if (e.keyCode == 27) { // ESC
+//			$('editor').hide();
+//			$('wac-editor').hide();
+//			hideWebID();
+//			hideCloud();
+//			hideImage();
+//		}
+//	});
 
 </script>
 

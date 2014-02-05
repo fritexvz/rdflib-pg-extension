@@ -17,46 +17,48 @@ DEPENDENCIES:
 
 EXEMPLE USAGE
 ```javascript
-    var FOAF = $rdf.Namespace("http://xmlns.com/foaf/0.1/");
+var FOAF = $rdf.Namespace("http://xmlns.com/foaf/0.1/");
 
-    // proxy
-    $rdf.Fetcher.fetcherWithPromiseCrossSiteProxyTemplate = "http://localhost:9000/srv/cors?url=";
+// proxy
+$rdf.Fetcher.fetcherWithPromiseCrossSiteProxyTemplate = "http://localhost:9000/srv/cors?url=";
 
-    var store = new $rdf.IndexedFormula();
-    // this makes "store.fetcher" variable available (same as RDFLib)
-    $rdf.fetcher(store, fetcherTimeout, true);
+var store = new $rdf.IndexedFormula();
+// this makes "store.fetcher" variable available (same as RDFLib)
+$rdf.fetcher(store, fetcherTimeout, true);
 
-    // You can use an URL with or without a fragment, it will give you different pointer graphs with the same underlying document/namedGraph.
-    var henryFoafProfileUrl = "http://bblfish.net/people/henry/card#me";
+// You can use an URL with or without a fragment, it will give you different pointer graphs with the same underlying document/namedGraph.
+var henryFoafProfileUrl = "http://bblfish.net/people/henry/card#me";
 
-    // You can fetch it, it returns a Q promise (to avoid JS callback hell)
-    var pointedGraphPromise = store.fetcher.fetch("http://bblfish.net/people/henry/card#me");
+// You can fetch it, it returns a Q promise (to avoid JS callback hell)
+var pointedGraphPromise = store.fetcher.fetch("http://bblfish.net/people/henry/card#me");
 
-    // You can register code that will be triggered when the pointedGraph is available
-    pointedGraphPromise.then(function(henryPg) {
+// You can register code that will be triggered when the pointedGraph is available
+pointedGraphPromise.then(function(henryPg) {
 
-        // You can get the list of pointed graphs that points to henry's friend in the local document
-        var localHenryFriendPgs = henryPg.rel(FOAF("knows"));
+    // You can get the list of pointed graphs that points to henry's friend in the local document
+    var localHenryFriendPgs = henryPg.rel(FOAF("knows"));
 
-        _.foreach(localHenryFriendPgs, function(localHenryFriendPg) {
+    _.foreach(localHenryFriendPgs, function(localHenryFriendPg) {
 
-            // Generally, each foaf profile is described in separate http resources / rdf named graphs.
-            // So you can't get much data by staying in the local graph, you have to jump to the remote graph
-            // that is hosted at your friend's profile URL.
-            // For that you use jumpAsync: this will fetch the remote URL and return a promise of pointed graph
-            // The PG pointer will be the same node (the friend url symbol) but the underlying document will be changed
-            var remoteFriendPgPromise = localHenryFriendPg.jumpAsync();
+        // Generally, each foaf profile is described in separate http resources / rdf graphs.
+        // So you can't get much data by staying in the local graph, 
+        // you have to jump to the remote graph that is hosted at your friend's foaf profile URL.
+        // For that you can use jumpAsync: this will fetch the remote URL 
+        // and return a promise of pointed graph. The PG pointer will be the same node 
+        // (the friend url symbol) but the underlying document will be changed
+        var remoteFriendPgPromise = localHenryFriendPg.jumpAsync();
 
-            remoteFriendPgPromise.then(function(remoteFriendPg) {
-                // Finally we can print the name of all Henry's friends
-                console.log( remoteFriendPg.relFirst(FOAF("name")) );
-            });
-
-
+        remoteFriendPgPromise.then(function(remoteFriendPg) {
+            // Finally we can print the name of all Henry's friends
+            var literalNode = remoteFriendPg.relFirst(FOAF("name")).pointer;
+            console.log(literalNode);
         });
 
 
     });
+
+
+});
 ```
 
 

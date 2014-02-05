@@ -64,6 +64,34 @@ pointedGraphPromise.then(function(henryPg) {
 });
 ```
 
+### With RxJs
+
+If you are using RxJs it's even simpler to get a stream of friends: you'll receive the friends pointed graphs as the requests come back:
+
+```javascript
+    pointedGraphPromise.then(function(henryPg) {
+
+        henryPg.jumpRelObservable( FOAF("knows") )
+                .map(function(remoteFriendPg) {
+                    return remoteFriendPg.relFirst(FOAF("name"));
+                })
+                .filter(function(maybeRemoteFriendPgName) {
+                    return typeof maybeRemoteFriendPgName != 'undefined';
+                })
+                .subscribe(function(remoteFriendPgName) {
+                    var friendName = remoteFriendPgName.pointer.toString();
+                    $("#friendList").append("<li>"+friendName+"</li>")
+                });
+
+    });
+```
+
+These exemples can be found here: https://github.com/stample/rdflib.js/tree/master/pointedgraph/exemples
+
+
+
+
+
 
 ## RequireJS:
 

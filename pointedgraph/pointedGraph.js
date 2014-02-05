@@ -25,7 +25,7 @@ $rdf.pointedGraph = function(store, pointer, namedGraphUrl) {
 $rdf.PointedGraph = function() {
     $rdf.PointedGraph = function(store, pointer, namedGraphUrl){
         // TODO assert the  pointer is a node
-        Preconditions.checkArgument( $rdf.PG.Utils.isFragmentlessSymbol(namedGraphUrl),"The namedGraphUrl should be a fragmentless symbol! -> "+namedGraphUrl);
+        $rdf.PG.Utils.checkArgument( $rdf.PG.Utils.isFragmentlessSymbol(namedGraphUrl),"The namedGraphUrl should be a fragmentless symbol! -> "+namedGraphUrl);
         this.store = store;
         this.pointer = pointer;
         this.namedGraphUrl = namedGraphUrl;
@@ -116,7 +116,7 @@ $rdf.PointedGraph = function() {
      * @returns {[PointedGraph]} of PointedGraphs with the same graph name in the same store
      */
     $rdf.PointedGraph.prototype.rel = function (rel) {
-        Preconditions.checkArgument( $rdf.PG.Utils.isSymbolNode(rel) , "The argument should be a symbol:"+rel);
+        $rdf.PG.Utils.checkArgument( $rdf.PG.Utils.isSymbolNode(rel) , "The argument should be a symbol:"+rel);
         var self = this;
         var resList = this.getCurrentDocumentTriplesMatching(this.pointer, rel, undefined, false);
         return _.map(resList, function (triple) {
@@ -130,7 +130,7 @@ $rdf.PointedGraph = function() {
      * @returns {[PointedGraph]} of PointedGraphs with the same graph name in the same store
      */
     $rdf.PointedGraph.prototype.rev = function (rel) {
-        Preconditions.checkArgument( $rdf.PG.Utils.isSymbolNode(rel) , "The argument should be a symbol:"+rel);
+        $rdf.PG.Utils.checkArgument( $rdf.PG.Utils.isSymbolNode(rel) , "The argument should be a symbol:"+rel);
         var self = this;
         var resList = this.getCurrentDocumentTriplesMatching(undefined, rel, this.pointer, false);
         return _.map(resList, function (triple) {
@@ -244,7 +244,7 @@ $rdf.PointedGraph = function() {
      * @returns {Promise[PointedGraph]}
      */
     $rdf.PointedGraph.prototype.jumpFetchRemote = function() {
-        Preconditions.checkArgument( this.isRemotePointer(),"You are not supposed to jumpFetch if you already have all the data locally. Pointer="+this.pointer);
+        $rdf.PG.Utils.checkArgument( this.isRemotePointer(),"You are not supposed to jumpFetch if you already have all the data locally. Pointer="+this.pointer);
         var pointerUrl = this.getSymbolPointerUrl();
         var referrerUrl = $rdf.PG.Utils.symbolNodeToUrl(this.namedGraphUrl);
         var force = false;

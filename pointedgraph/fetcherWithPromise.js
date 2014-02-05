@@ -63,7 +63,7 @@ $rdf.Fetcher.prototype.proxifyIfNeeded = function(url) {
 }
 
 $rdf.Fetcher.prototype.proxifySymbolIfNeeded = function(symbol) {
-    Preconditions.checkArgument( $rdf.PG.Utils.isSymbolNode(symbol),"This is not a symbol!"+symbol);
+    $rdf.PG.Utils.checkArgument( $rdf.PG.Utils.isSymbolNode(symbol),"This is not a symbol!"+symbol);
     var url = $rdf.PG.Utils.symbolNodeToUrl(symbol);
     var proxifiedUrl = this.proxifyIfNeeded(url);
     return $rdf.sym(proxifiedUrl);

@@ -53,8 +53,8 @@ pointedGraphPromise.then(function(henryPg) {
 
         remoteFriendPgPromise.then(function(remoteFriendPg) {
             // Finally we can print the name of all Henry's friends
-            var literalNode = remoteFriendPg.relFirst(FOAF("name")).pointer;
-            console.log(literalNode);
+            var friendName = remoteFriendPg.relFirst(FOAF("name")).pointer.toString();;
+            $("#friendList").append("<li>"+friendName+"</li>")
         });
 
 

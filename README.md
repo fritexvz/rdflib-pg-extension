@@ -1,6 +1,8 @@
+# RDFLib.js Pointed Graph extension
+
 This is a repository with a PointedGraph extension of RDFLib.js.
 
-What is a Pointed Graph?
+## What is a Pointed Graph?
 
 - A pointed graph is a pointer in a named graph.
 - A named graph is an http resource/document which contains an RDF graph (a list of RDF triples)
@@ -9,13 +11,14 @@ What is a Pointed Graph?
 This API permits to easily navigate through RDFLib graphs in an RDFLib store.
 Inspired by what is done in banana-rdf (https://github.com/w3c/banana-rdf) but for the browser.
 
-DEPENDENCIES:
+## Dependencies:
 - Q (https://github.com/kriskowal/q)
 - Underscore (https://github.com/jashkenas/underscore)
 - Optional: RxJs (rx.js + js.async.js?) (https://github.com/Reactive-Extensions/RxJS) (TODO to document)
 - Optional: JQuery (TODO to document)
 
-EXEMPLE USAGE
+## Exemple
+
 ```javascript
 var FOAF = $rdf.Namespace("http://xmlns.com/foaf/0.1/");
 
@@ -62,7 +65,44 @@ pointedGraphPromise.then(function(henryPg) {
 ```
 
 
-DOWNLOAD
+## RequireJS:
+
+```javascript
+require.config({
+    paths: {
+        "jquery": "lib/jquery-2.1.0.min",
+        "underscore":"lib/underscore",
+        "q": "lib/q",
+        "rdflib": "lib/rdflib/rdflib",
+        "rdflib-pg-extension": "lib/rdflib/rdflib-pg-extension",
+    },
+
+    shim: {
+
+        "rdflib-pg-extension": {
+            "deps": ["rdflib","underscore","q"],
+            "exports":"rdflib-pg-extension"
+        }
+
+    }
+});
+
+require([
+    "jquery",
+    "underscore",
+    "q",
+    "rdflib",
+    "rdflib-pg-extension",
+    ],
+    function ($, _, Q, rdflib, rdflibPg) {
+        // Do something
+    }
+);
+```
+
+
+
+## Download
 
 You can find versioned releases in the /releases folder.
 
@@ -70,10 +110,12 @@ We recommend using our rdflib.js version because it may include pull requests
 that have not yet been merged to the official rdflib.js master.
 
 
-INSTALL
+## Install
  
  Run `make` to generate the dist directory
  This is like the original RDFLib Makefile but it generates an additional rdflib-pg-extension.js
 
 
-LICENSE: MIT
+## Licence: 
+ 
+ MIT

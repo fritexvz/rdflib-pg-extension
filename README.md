@@ -33,7 +33,7 @@ $rdf.fetcher(store, fetcherTimeout, true);
 var henryFoafProfileUrl = "http://bblfish.net/people/henry/card#me";
 
 // You can fetch it, it returns a Q promise (to avoid JS callback hell)
-var pointedGraphPromise = store.fetcher.fetch("http://bblfish.net/people/henry/card#me");
+var pointedGraphPromise = store.fetcher.fetch(henryFoafProfileUrl);
 
 // You can register code that will be triggered when the pointedGraph is available
 pointedGraphPromise.then(function(henryPg) {
@@ -41,7 +41,7 @@ pointedGraphPromise.then(function(henryPg) {
     // You can get the list of pointed graphs that points to henry's friend in the local document
     var localHenryFriendPgs = henryPg.rel(FOAF("knows"));
 
-    _.foreach(localHenryFriendPgs, function(localHenryFriendPg) {
+    _.each(localHenryFriendPgs, function(localHenryFriendPg) {
 
         // Generally, each foaf profile is described in separate http resources / rdf graphs.
         // So you can't get much data by staying in the local graph, 
@@ -69,6 +69,8 @@ pointedGraphPromise.then(function(henryPg) {
 If you are using RxJs it's even simpler to get a stream of friends: you'll receive the friends pointed graphs as the requests come back:
 
 ```javascript
+    var pointedGraphPromise = store.fetcher.fetch(henryFoafProfileUrl);
+    
     pointedGraphPromise.then(function(henryPg) {
 
         henryPg.jumpRelObservable( FOAF("knows") )

@@ -88,17 +88,17 @@ $rdf.PG.Utils = {
 
     getLiteralNodes: function(pg, relSym) {
         return _.chain(pgUtils.getNodes(pg,relSym))
-            .filter($rdf.Stmpl.isLiteralNode)
+            .filter($rdf.PG.Utils.isLiteralNode)
             .value();
     },
     getSymbolNodes: function(pg, relSym) {
         return _.chain(pgUtils.getNodes(pg,relSym))
-            .filter($rdf.Stmpl.isSymbolNode)
+            .filter($rdf.PG.Utils.isSymbolNode)
             .value();
     },
     getBlankNodes: function(pg, relSym) {
         return _.chain(pgUtils.getNodes(pg,relSym))
-            .filter($rdf.Stmpl.isBlankNode)
+            .filter($rdf.PG.Utils.isBlankNode)
             .value();
     },
 
@@ -136,10 +136,10 @@ $rdf.PG.Filters = {
 
 $rdf.PG.Transformers = {
     literalPointerToValue: function(pg) {
-        return $rdf.Stmpl.literalNodeToValue(pg.pointer);
+        return $rdf.PG.Utils.literalNodeToValue(pg.pointer);
     },
     symbolPointerToValue: function(pg) {
-        return $rdf.Stmpl.symbolNodeToUrl(pg.pointer);
+        return $rdf.PG.Utils.symbolNodeToUrl(pg.pointer);
     }
 }
 

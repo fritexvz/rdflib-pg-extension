@@ -89,17 +89,17 @@ $rdf.PG.Utils = {
 
     getLiteralNodes: function(pg, relSym) {
         return _.chain(pgUtils.getNodes(pg,relSym))
-            .filter($rdf.Stmpl.isLiteralNode)
+            .filter($rdf.PG.Utils.isLiteralNode)
             .value();
     },
     getSymbolNodes: function(pg, relSym) {
         return _.chain(pgUtils.getNodes(pg,relSym))
-            .filter($rdf.Stmpl.isSymbolNode)
+            .filter($rdf.PG.Utils.isSymbolNode)
             .value();
     },
     getBlankNodes: function(pg, relSym) {
         return _.chain(pgUtils.getNodes(pg,relSym))
-            .filter($rdf.Stmpl.isBlankNode)
+            .filter($rdf.PG.Utils.isBlankNode)
             .value();
     },
 
@@ -137,10 +137,10 @@ $rdf.PG.Filters = {
 
 $rdf.PG.Transformers = {
     literalPointerToValue: function(pg) {
-        return $rdf.Stmpl.literalNodeToValue(pg.pointer);
+        return $rdf.PG.Utils.literalNodeToValue(pg.pointer);
     },
     symbolPointerToValue: function(pg) {
-        return $rdf.Stmpl.symbolNodeToUrl(pg.pointer);
+        return $rdf.PG.Utils.symbolNodeToUrl(pg.pointer);
     }
 }
 
@@ -209,8 +209,8 @@ $rdf.Fetcher.prototype.proxifyIfNeeded = function(url) {
 }
 
 $rdf.Fetcher.prototype.proxifySymbolIfNeeded = function(symbol) {
-    Preconditions.checkArgument( $rdf.Stmpl.isSymbolNode(symbol),"This is not a symbol!"+symbol);
-    var url = $rdf.Stmpl.symbolNodeToUrl(symbol);
+    Preconditions.checkArgument( $rdf.PG.Utils.isSymbolNode(symbol),"This is not a symbol!"+symbol);
+    var url = $rdf.PG.Utils.symbolNodeToUrl(symbol);
     var proxifiedUrl = this.proxifyIfNeeded(url);
     return $rdf.sym(proxifiedUrl);
 }
@@ -230,7 +230,7 @@ $rdf.Fetcher.prototype.proxifySymbolIfNeeded = function(symbol) {
 $rdf.Fetcher.prototype.fetch = function(uri, referringTerm, force) {
     var self = this;
     var uriSym = $rdf.sym(uri);
-    var docUri = $rdf.Stmpl.fragmentless(uri);
+    var docUri = $rdf.PG.Utils.fragmentless(uri);
     var docUriSym = $rdf.sym(docUri);
     // The doc uri to fetch is the doc uri that may have been proxyfied
     var docUriToFetch = self.proxifyIfNeeded(docUri);

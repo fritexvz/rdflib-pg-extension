@@ -63,8 +63,8 @@ $rdf.Fetcher.prototype.proxifyIfNeeded = function(url) {
 }
 
 $rdf.Fetcher.prototype.proxifySymbolIfNeeded = function(symbol) {
-    Preconditions.checkArgument( $rdf.Stmpl.isSymbolNode(symbol),"This is not a symbol!"+symbol);
-    var url = $rdf.Stmpl.symbolNodeToUrl(symbol);
+    Preconditions.checkArgument( $rdf.PG.Utils.isSymbolNode(symbol),"This is not a symbol!"+symbol);
+    var url = $rdf.PG.Utils.symbolNodeToUrl(symbol);
     var proxifiedUrl = this.proxifyIfNeeded(url);
     return $rdf.sym(proxifiedUrl);
 }
@@ -84,7 +84,7 @@ $rdf.Fetcher.prototype.proxifySymbolIfNeeded = function(symbol) {
 $rdf.Fetcher.prototype.fetch = function(uri, referringTerm, force) {
     var self = this;
     var uriSym = $rdf.sym(uri);
-    var docUri = $rdf.Stmpl.fragmentless(uri);
+    var docUri = $rdf.PG.Utils.fragmentless(uri);
     var docUriSym = $rdf.sym(docUri);
     // The doc uri to fetch is the doc uri that may have been proxyfied
     var docUriToFetch = self.proxifyIfNeeded(docUri);

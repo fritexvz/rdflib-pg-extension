@@ -2,7 +2,8 @@
 
 R=util.js uri.js term.js rdfparser.js n3parser.js identity.js query.js sparql.js sparqlUpdate.js jsonparser.js serialize.js updatesVia.js web.js
 
-targets=$(addprefix dist/, rdflib.js rdflib-rdfa.js)
+
+targets=$(addprefix dist/, rdflib.js rdflib-rdfa.js rdflib-pg-extension.js)
 coffeejs=$(patsubst %.coffee,%.js,$(wildcard *.coffee))
 
 all: dist $(targets)
@@ -14,6 +15,16 @@ dist/rdflib.js: $R module.js
 	echo "(function(root, undef) {" > $@
 	cat $R module.js >> $@
 	echo "})(this);" >> $@
+
+
+
+P=$(addprefix pointedgraph/, pgUtils.js fetcherWithPromise.js pointedGraph.js)
+dist/rdflib-pg-extension.js: $P
+	echo "(function(root, undef) {" > $@
+	cat $P >> $@
+	echo "})(this);" >> $@
+
+
 
 J=dist
 X=jquery.uri.js jquery.xmlns.js

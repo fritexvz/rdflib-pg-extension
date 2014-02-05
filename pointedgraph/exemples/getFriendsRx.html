@@ -10,8 +10,8 @@
     <script src="http://cdnjs.cloudflare.com/ajax/libs/rxjs/2.2.10/rx.async.js"></script>
 
 
-    <script src="../dist/rdflib-stample.js"></script>
-    <script src="../dist/rdflib-stample-pg-extension.js"></script>
+    <script src="../../dist/rdflib-stample.js"></script>
+    <script src="../../dist/rdflib-stample-pg-extension.js"></script>
 
 </head>
 <body>
@@ -20,7 +20,7 @@
     var FOAF = $rdf.Namespace("http://xmlns.com/foaf/0.1/");
 
     // proxy
-    $rdf.Fetcher.fetcherWithPromiseCrossSiteProxyTemplate = "http://localhost:9000/srv/cors?url=";
+    $rdf.Fetcher.fetcherWithPromiseCrossSiteProxyTemplate = "http://data.fm/proxy?uri=";
 
     var store = new $rdf.IndexedFormula();
     // this makes "store.fetcher" variable available (same as RDFLib)
@@ -43,11 +43,19 @@
                     return typeof maybeRemoteFriendPgName != 'undefined';
                 })
                 .subscribe(function(remoteFriendPgName) {
-                    console.log("Friend name node: " + remoteFriendPgName.pointer);
+                    var friendName = remoteFriendPgName.pointer.toString();
+                    $("#friendList").append("<li>"+friendName+"</li>")
                 });
 
     });
 </script>
+
+<div>
+    <ul id="friendList">
+
+    </ul>
+</div>
+
 
 </body>
 </html>

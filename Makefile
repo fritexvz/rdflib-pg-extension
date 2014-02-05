@@ -3,7 +3,7 @@
 R=util.js uri.js term.js rdfparser.js n3parser.js identity.js query.js sparql.js sparqlUpdate.js jsonparser.js serialize.js updatesVia.js web.js
 
 
-targets=$(addprefix dist/, rdflib.js rdflib-rdfa.js rdflib-pg-extension.js)
+targets=$(addprefix dist/, rdflib-stample.js rdflib-stample-pg-extension.js)
 coffeejs=$(patsubst %.coffee,%.js,$(wildcard *.coffee))
 
 all: dist $(targets)
@@ -11,15 +11,15 @@ all: dist $(targets)
 dist:
 	mkdir -p dist
 
-dist/rdflib.js: $R module.js
+dist/rdflib-stample.js: $R module.js
 	echo "(function(root, undef) {" > $@
 	cat $R module.js >> $@
 	echo "})(this);" >> $@
 
 
 
-P=$(addprefix pointedgraph/, pgUtils.js fetcherWithPromise.js pointedGraph.js)
-dist/rdflib-pg-extension.js: $P
+P=$(addprefix pointedgraph/, pg.js pointedGraph.js fetcherWithPromise.js)
+dist/rdflib-stample-pg-extension.js: $P
 	echo "(function(root, undef) {" > $@
 	cat $P >> $@
 	echo "})(this);" >> $@

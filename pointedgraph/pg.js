@@ -2,11 +2,18 @@
 
 
 ///////////////////////////////////////////////////////////////////////////////////////////////
-// pgUtils.js, part of rdflib-pg-extension.js made by Stample
+// pg.js, part of rdflib-pg-extension.js made by Stample
 // see https://github.com/stample/rdflib.js
 ///////////////////////////////////////////////////////////////////////////////////////////////
 
-$rdf.PG = { }
+$rdf.PG = {
+    createNewStore: function(fetcherTimeout) {
+        var store = new $rdf.IndexedFormula();
+        // this makes "store.fetcher" variable available
+        $rdf.fetcher(store, fetcherTimeout, true);
+        return store;
+    }
+}
 
 $rdf.PG.Utils = {
 

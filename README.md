@@ -20,8 +20,8 @@ Inspired by what is done in [banana-rdf](https://github.com/w3c/banana-rdf) but 
 ## Dependencies:
 - [Q](https://github.com/kriskowal/q)
 - [Underscore](https://github.com/jashkenas/underscore)
-- Recommended: [JQuery](https://github.com/jquery/jquery) (TODO to document)
-- Optional: [RxJs](https://github.com/Reactive-Extensions/RxJS) (rx.js+js.async.js) (TODO to document)
+- [JQuery](https://github.com/jquery/jquery) (Recommended) (TODO to document)
+- [RxJs](https://github.com/Reactive-Extensions/RxJS) (Optional. rx.js + js.async.js) (TODO to document)
 
 ## Exemple
 

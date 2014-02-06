@@ -150,7 +150,9 @@ Of course you'll have to handle duplicate names because you may receive multiple
 
 #### Other exemples?
 
-Look at the code documentation, there's not much more methods but the it's just a preview of what you'll be able to do.
+You can find how we use our own library in this [react-foaf](https://github.com/stample/react-foaf) project.
+
+Look at the code documentation, there's not much more methods but the it's just a preview of what you'll be able to do. Coming soon: how to edit graphs for the RWW world.
 
 ### Try it
 

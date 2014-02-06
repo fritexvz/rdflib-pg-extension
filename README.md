@@ -27,13 +27,17 @@ Inspired by what is done in [banana-rdf](https://github.com/w3c/banana-rdf) but 
 
 We will show how from a `foaf:Person` url, we can print the friend names of this person.
 
+Some vocab first to explain the variable names:
+**localPg**: this is a pointed graph in the same http document: no additional http request is needed to obtain it.
+**remotePg**: this is a pointed graph that may (not always) belong to another http document. This means that it is probable that additional http requests have to be made to access this pointed graph.
+
 #### Fetching the person
 
 ```javascript
 var FOAF = $rdf.Namespace("http://xmlns.com/foaf/0.1/");
 
 // We don't use the RDFLib original proxy but this one instead
-$rdf.Fetcher.fetcherWithPromiseCrossSiteProxyTemplate = "http://data.fm/proxy?uri=";
+$rdf.Fetcher.fetcherWithPromiseCrossSiteProxyTemplate = "https://www.stample.io/srv/cors?url=";
 
 var fetcherTimeout = 3000;
 var store = $rdf.PG.createNewStore(fetcherTimeout);
@@ -130,10 +134,38 @@ Look at the code documentation, there's not much more methods but the it's just 
 
 These working exemples can be found [here](https://github.com/stample/rdflib.js/tree/master/pointedgraph/exemples).
 Just clone the repo and open the html files in your browser.
-Just make sure the CORS proxy is online (data.fm proxy is not always available :s)
 
 There's also an exemple of [using requireJS](https://github.com/stample/rdflib.js/blob/master/pointedgraph/exemples/getFriendsRequire.html
 ).
+
+## CORS Proxy
+
+Here are some CORS proxy that you can use:
+
+```javascript
+$rdf.Fetcher.fetcherWithPromiseCrossSiteProxyTemplate = "https://www.stample.io/srv/cors?url=";
+$rdf.Fetcher.fetcherWithPromiseCrossSiteProxyTemplate = "http://data.fm/proxy?uri=";
+```
+There may not always be online. 
+Stample.io proxy (rww-play/Netty/Scala based) is a lot faster than data.fm proxy (PHP).
+
+
+You can also run your own local proxy thanks to [rww-play](/stample/rww-play)
+
+```javascript
+$rdf.Fetcher.fetcherWithPromiseCrossSiteProxyTemplate = "http://localhost:9000/srv/cors?url=";
+```
+
+##### What about original RDFLib proxy?
+
+We usually can register a proxy for RDFLib:
+
+```javascript
+$rdf.Fetcher.CrossSiteProxyTemplate = "http://data.fm/proxy?uri=";
+```
+
+We do not recommend using it. 
+Actually the integration of our lib with RDFLib is not perfect and it doesn't work with the regular RDFLib proxy.
 
 
 ## Download

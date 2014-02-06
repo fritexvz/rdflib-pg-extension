@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title></title>
+    <script src="http://cdnjs.cloudflare.com/ajax/libs/require.js/2.1.10/require.js"></script>
+</head>
+<body>
+
+
+<script>
+    require.config({
+        paths: {
+            "jquery": "http://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.0/jquery",
+            "underscore":"http://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.5.2/underscore-min",
+            "q": "http://cdnjs.cloudflare.com/ajax/libs/q.js/0.9.2/q",
+            "rdflib": "../../dist/rdflib-stample",
+            "rdflib-pg-extension": "../../dist/rdflib-stample-pg-extension"
+        },
+
+        shim: {
+            "jquery": {
+                exports: '$'
+            },
+            "underscore": {
+                "exports":"_"
+            },
+            "rdflib-pg-extension": {
+                "deps": ["rdflib","jquery","underscore","q"],
+                "exports":"$rdf.PG"
+            }
+        }
+    });
+
+    require(
+            [
+                "jquery",
+                "underscore",
+                "q",
+                "rdflib",
+                "rdflib-pg-extension",
+            ],
+            function ($, _, Q, rdflib, rdflibPg) {
+                // make Q globally available because it's not when loading it with require
+                // and global Q variable is needed by the fetcher :(
+                window.Q = Q;
+
+                var FOAF = $rdf.Namespace("http://xmlns.com/foaf/0.1/");
+                $rdf.Fetcher.fetcherWithPromiseCrossSiteProxyTemplate = "http://data.fm/proxy?uri=";
+                var fetcherTimeout = 3000;
+                var store = rdflibPg.createNewStore(fetcherTimeout);
+                var henryFoafProfileUrl = "http://bblfish.net/people/henry/card#me";
+
+                store.fetcher.fetch(henryFoafProfileUrl)
+                        .then(function(henryPg) {
+                            printPersonFriendNames(henryPg);
+                        });
+
+                function printPersonFriendNames(personPg) {
+                    var localFriendPgs = personPg.rel( FOAF("knows") );
+                    _.each(localFriendPgs, function(localFriendPg) {
+                        jumpAndPrintName(localFriendPg);
+                    });
+                }
+
+                function jumpAndPrintName(localFriendPg) {
+                    localFriendPg.jumpAsync()
+                            .then(function(remoteFriendPg) {
+                                console.debug("Jumped to friend pointed graph",remoteFriendPg);
+                                var friendName = remoteFriendPg.relFirst(FOAF("name")).pointer.toString();;
+                                $("#friendList").append("<li>"+friendName+"</li>")
+                            }).fail(function (jumpError) {
+                                console.warn("Error during jump from ",localFriendPg.printSummary(),jumpError);
+                            });
+                }
+
+
+            }
+    );
+</script>
+
+
+<div>
+    <ul id="friendList">
+
+    </ul>
+</div>
+
+</body>
+</html>

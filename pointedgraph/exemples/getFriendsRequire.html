@@ -44,7 +44,8 @@
                 window.Q = Q;
 
                 var FOAF = $rdf.Namespace("http://xmlns.com/foaf/0.1/");
-                $rdf.Fetcher.fetcherWithPromiseCrossSiteProxyTemplate = "http://data.fm/proxy?uri=";
+                $rdf.Fetcher.fetcherWithPromiseCrossSiteProxyTemplate = "https://www.stample.io/srv/cors?url=";
+                //$rdf.Fetcher.fetcherWithPromiseCrossSiteProxyTemplate = "http://data.fm/proxy?uri=";
                 var fetcherTimeout = 3000;
                 var store = rdflibPg.createNewStore(fetcherTimeout);
                 var henryFoafProfileUrl = "http://bblfish.net/people/henry/card#me";

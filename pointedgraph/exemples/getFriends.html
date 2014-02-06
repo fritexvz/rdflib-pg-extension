@@ -34,7 +34,7 @@
 
 
     function printPersonFriendNames(personPg) {
-        // You can get the list of pointed graphs that points to henry's friend in the local document
+        // get the list of pointed graphs that points to henry's friend in the local document
         var localFriendPgs = personPg.rel( FOAF("knows") );
         _.each(localFriendPgs, function(localFriendPg) {
             printFriendName(localFriendPg);

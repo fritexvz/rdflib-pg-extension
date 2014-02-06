@@ -665,7 +665,7 @@ $rdf.PointedGraph = function() {
      * This means that the current pointer exists in the local graph as a subject in at least one triple.
      */
     $rdf.PointedGraph.prototype.hasRels = function() {
-        return this.getCurrentDocumentTriplesMatching(this.pointer, undefined, object, onlyOne);
+        return this.getCurrentDocumentTriplesMatching(this.pointer, undefined, undefined, true).length > 0;
     }
 
     /**
@@ -673,7 +673,7 @@ $rdf.PointedGraph = function() {
      * This means that the current pointer exists in the local graph as an object in at least one triple.
      */
     $rdf.PointedGraph.prototype.hasRevs = function() {
-        return this.getCurrentDocumentTriplesMatching(undefined, rel, object, onlyOne);
+        return this.getCurrentDocumentTriplesMatching(undefined, undefined, this.pointer, true).length > 0;
     }
 
 

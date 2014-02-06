@@ -34,12 +34,12 @@
                 .flatMap(function(remoteFriendPg) {
                     return remoteFriendPg.jumpRelObservable( FOAF("knows") );
                 })
-                .flatMap(function(remoteFriendPg) {
-                    return Rx.Observable.fromArray( remoteFriendPg.rel(FOAF("name")) );
+                .flatMap(function(remoteFriendFrientPg) {
+                    return Rx.Observable.fromArray( remoteFriendFrientPg.rel(FOAF("name")) );
                 })
-                .subscribe(function(remoteFriendPgName) {
-                    var friendName = remoteFriendPgName.pointer.toString();
-                    $("#friendList").append("<li>"+friendName+"</li>")
+                .subscribe(function(remoteFriendFriendPgName) {
+                    var friendFriendName = remoteFriendFriendPgName.pointer.toString();
+                    $("#friendList").append("<li>"+friendFriendName+"</li>")
                 });
     }
 

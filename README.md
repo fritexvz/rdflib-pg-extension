@@ -12,10 +12,36 @@ It is in active development and will provide soon different ways to edit RDF gra
 - A named graph is an http resource/document which contains an RDF graph (a list of RDF triples)
 - A pointer is a particular node in this graph.
 
+
 This API permits to easily navigate through RDFLib graphs in an RDFLib store.
 Inspired by what is done in [banana-rdf](https://github.com/w3c/banana-rdf) but for the browser.
 
+#### Additional vocabulary:
 
+A PG is an abbreviation for a pointed graph.
+
+A document / named graph / http resource means the same thing here.
+
+A rel / relation / RDF predicate is the "middle" part of a triple: `subject / predicate / object`.
+
+#### Navigate in the RDF graphs
+
+From a given pointed graph, you can navigate to two different kind of pointed graphs:
+
+- **localPg**: this is a pointed graph in the same http document: no additional http request is needed to obtain it.
+- **remotePg**: this is a pointed graph that belong to another http document. This means that it is probable that additional http requests have to be made to access this pointed graph.
+
+#### Rel operation
+
+We describe the **rel** operation as being the operation that permits to stay in the same document but move the pointer to a different node (Yes, it can also be a blank/literal node!)
+For exemple if you points to a `foaf:Person` you can follow the rel `FOAF("name")`. It will give you a list of **localPg**. You may wonder why it is a list? Because one person can have multiple triples with the same relation. This is why we have a **relFirst** operator which will be useful for most cases line a person name, age...
+
+###### Jump operation
+
+We describe the **jump** operation as being the operation that permits to keep the same pointer but changes the underlying document / named graph / http resource. It is the **jump** operation that triggers the fetching of remote documents. If the current PG pointer is an URL of another document, this will fetch this document and so give you a **remotePg**. If the current pointer is a blank node, literal or local named node, this will do nothing and return the current PG because all the data is already defined locally.
+
+
+TODO: define an unique ubiquitous language because the RDF world is not easy...
 
 ## Dependencies:
 - [Q](https://github.com/kriskowal/q)
@@ -26,10 +52,6 @@ Inspired by what is done in [banana-rdf](https://github.com/w3c/banana-rdf) but 
 ## Exemple
 
 We will show how from a `foaf:Person` url, we can print the friend names of this person.
-
-Some vocab first to explain the variable names:
-**localPg**: this is a pointed graph in the same http document: no additional http request is needed to obtain it.
-**remotePg**: this is a pointed graph that may (not always) belong to another http document. This means that it is probable that additional http requests have to be made to access this pointed graph.
 
 #### Fetching the person
 

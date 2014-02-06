@@ -13,26 +13,26 @@ It is in active development and will provide soon different ways to edit RDF gra
 - A pointer is a particular node in this graph.
 
 This API permits to easily navigate through RDFLib graphs in an RDFLib store.
-Inspired by what is done in banana-rdf (https://github.com/w3c/banana-rdf) but for the browser.
+Inspired by what is done in [banana-rdf](https://github.com/w3c/banana-rdf) but for the browser.
 
 
 
 ## Dependencies:
-- Q (https://github.com/kriskowal/q)
-- Underscore (https://github.com/jashkenas/underscore)
-- Recommended: JQuery (TODO to document)
-- Optional: RxJs (rx.js+js.async.js) (https://github.com/Reactive-Extensions/RxJS) (TODO to document)
+- [Q](https://github.com/kriskowal/q)
+- [Underscore](https://github.com/jashkenas/underscore)
+- Recommended: [JQuery](https://github.com/jquery/jquery) (TODO to document)
+- Optional: [RxJs](https://github.com/Reactive-Extensions/RxJS) (rx.js+js.async.js) (TODO to document)
 
 ## Exemple
 
 We will show how from a `foaf:Person` url, we can print the friend names of this person.
 
-### Fetching the person
+#### Fetching the person
 
 ```javascript
 var FOAF = $rdf.Namespace("http://xmlns.com/foaf/0.1/");
 
-   
+// We don't use the RDFLib original proxy but this one instead
 $rdf.Fetcher.fetcherWithPromiseCrossSiteProxyTemplate = "http://data.fm/proxy?uri=";
 
 var fetcherTimeout = 3000;
@@ -53,7 +53,7 @@ store.fetcher.fetch(henryFoafProfileUrl)
         });
 ```
 
-### With JumpAsync
+#### With JumpAsync
 
 ```javascript
 function printPersonFriendNames(personPg) {
@@ -82,7 +82,7 @@ function printFriendName(localFriendPg) {
 }
 ```
 
-### With RxJs Observable
+#### With RxJs Observable
 
 If you are using RxJs it's even simpler to get a stream of friends: you'll receive the friends pointed graphs as the requests come back:
 
@@ -100,30 +100,47 @@ function printFriendName(personPg) {
 ```
 
 But you'll have to understand some functional operators on streams like the flatMap operator to be able to use it efficiently.
-You will find help in the Functional Reactive Programming course on coursera
+You will find great help in the Coursera course: [Functional Reactive Programming in Scala](https://www.coursera.org/course/reactive).
 
+This is very powerful, now just imagine I do not want to print the Henry's friend names, but I want to print the name of the friends of the friends of Henry. This is not much complicated to get a stream on that! Just 3 additional lines!
+
+```javascript
+    function printFriendName(personPg) {
+        personPg.jumpRelObservable( FOAF("knows") )
+                .flatMap(function(remoteFriendPg) {
+                    return remoteFriendPg.jumpRelObservable( FOAF("knows") );
+                })
+                .flatMap(function(remoteFriendPg) {
+                    return Rx.Observable.fromArray( remoteFriendPg.rel(FOAF("name")) );
+                })
+                .subscribe(function(remoteFriendPgName) {
+                    var friendName = remoteFriendPgName.pointer.toString();
+                    $("#friendList").append("<li>"+friendName+"</li>")
+                });
+    }
+```
+
+Of course you'll have to handle duplicate names because you may receive multiple time the same friend name...
+
+#### Other exemples?
+
+Look at the code documentation, there's not much more methods but the it's just a preview of what you'll be able to do.
 
 ### Try it
 
-These working exemples can be found here.
-https://github.com/stample/rdflib.js/tree/master/pointedgraph/exemples
+These working exemples can be found [here](https://github.com/stample/rdflib.js/tree/master/pointedgraph/exemples).
+Just clone the repo and open the html files in your browser.
 Just make sure the CORS proxy is online (data.fm proxy is not always available :s)
 
-
-
-
-## RequireJS:
-
-There's an exemple using RequireJS here:
-https://github.com/stample/rdflib.js/blob/master/pointedgraph/exemples/getFriendsRequire.html
-
+There's also an exemple of [using requireJS](https://github.com/stample/rdflib.js/blob/master/pointedgraph/exemples/getFriendsRequire.html
+).
 
 
 ## Download
 
-You can find versioned releases in the /releases folder.
+You can find versioned releases in the [releases](https://github.com/stample/rdflib.js/tree/master/releases) folder.
 
-We recommend using our rdflib.js version because it may include pull requests
+We recommend using our rdflib-stample.js version because it may include pull requests
 that have not yet been merged to the official rdflib.js master.
 
 

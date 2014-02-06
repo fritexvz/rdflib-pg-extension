@@ -32,6 +32,9 @@
     function printFriendName(personPg) {
         personPg.jumpRelObservable( FOAF("knows") )
                 .flatMap(function(remoteFriendPg) {
+                    return remoteFriendPg.jumpRelObservable( FOAF("knows") );
+                })
+                .flatMap(function(remoteFriendPg) {
                     return Rx.Observable.fromArray( remoteFriendPg.rel(FOAF("name")) );
                 })
                 .subscribe(function(remoteFriendPgName) {

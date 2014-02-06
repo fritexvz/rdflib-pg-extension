@@ -36,7 +36,7 @@ From a given pointed graph, you can navigate to two different kind of pointed gr
 We describe the **rel** operation as being the operation that permits to stay in the same document but move the pointer to a different node (Yes, it can also be a blank/literal node!)
 For exemple if you points to a `foaf:Person` you can follow the rel `FOAF("name")`. It will give you a list of **localPg**. You may wonder why it is a list? Because one person can have multiple triples with the same relation. This is why we have a **relFirst** operator which will be useful for most cases line a person name, age...
 
-###### Jump operation
+#### Jump operation
 
 We describe the **jump** operation as being the operation that permits to keep the same pointer but changes the underlying document / named graph / http resource. It is the **jump** operation that triggers the fetching of remote documents. If the current PG pointer is an URL of another document, this will fetch this document and so give you a **remotePg**. If the current pointer is a blank node, literal or local named node, this will do nothing and return the current PG because all the data is already defined locally.
 

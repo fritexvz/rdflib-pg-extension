@@ -89,14 +89,14 @@ If you are using RxJs it's even simpler to get a stream of friends: you'll recei
 ```javascript
 function printFriendName(personPg) {
     personPg.jumpRelObservable( FOAF("knows") )
-            .flatMap(function(remoteFriendPg) {
-                return Rx.Observable.fromArray( remoteFriendPg.rel(FOAF("name")) );
-            })
-            .subscribe(function(remoteFriendPgName) {
-                var friendName = remoteFriendPgName.pointer.toString();
-                $("#friendList").append("<li>"+friendName+"</li>")
-            });
-    }
+        .flatMap(function(remoteFriendPg) {
+            return Rx.Observable.fromArray( remoteFriendPg.rel(FOAF("name")) );
+        })
+        .subscribe(function(remoteFriendPgName) {
+            var friendName = remoteFriendPgName.pointer.toString();
+            $("#friendList").append("<li>"+friendName+"</li>")
+        });
+}
 ```
 
 But you'll have to understand some functional operators on streams like the flatMap operator to be able to use it efficiently.
@@ -105,19 +105,19 @@ You will find great help in the Coursera course: [Functional Reactive Programmin
 This is very powerful, now just imagine I do not want to print the Henry's friend names, but I want to print the name of the friends of the friends of Henry. This is not much complicated to get a stream on that! Just 3 additional lines!
 
 ```javascript
-    function printFriendName(personPg) {
-        personPg.jumpRelObservable( FOAF("knows") )
-                .flatMap(function(remoteFriendPg) {
-                    return remoteFriendPg.jumpRelObservable( FOAF("knows") );
-                })
-                .flatMap(function(remoteFriendPg) {
-                    return Rx.Observable.fromArray( remoteFriendPg.rel(FOAF("name")) );
-                })
-                .subscribe(function(remoteFriendPgName) {
-                    var friendName = remoteFriendPgName.pointer.toString();
-                    $("#friendList").append("<li>"+friendName+"</li>")
-                });
-    }
+function printFriendName(personPg) {
+    personPg.jumpRelObservable( FOAF("knows") )
+    .flatMap(function(remoteFriendPg) {
+        return remoteFriendPg.jumpRelObservable( FOAF("knows") );
+    })
+    .flatMap(function(remoteFriendFrientPg) {
+        return Rx.Observable.fromArray( remoteFriendFrientPg.rel(FOAF("name")) );
+    })
+    .subscribe(function(remoteFriendFriendPgName) {
+        var friendFriendName = remoteFriendFriendPgName.pointer.toString();
+        $("#friendList").append("<li>"+friendFriendName+"</li>")
+    });
+}
 ```
 
 Of course you'll have to handle duplicate names because you may receive multiple time the same friend name...

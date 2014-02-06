@@ -515,30 +515,6 @@ $rdf.PointedGraph = function() {
         return this.printSummary();
     }
 
-
-    // TODO not sure it's a good idea neither if it's well implemented
-    // TODO this file should not contain anything related to ReactJS lib...
-    /**
-     * Return a string key for the current pointer.
-     * This is useful for React to be able to associate a key to each relation to avoid recreating dom nodes
-     * Note that the key value must be unique or React can't handle this
-     * @returns
-     */
-    $rdf.PointedGraph.prototype.getPointerKeyForReact = function() {
-        if ( this.isBlankNodePointer() ) {
-            return "BNode-"+this.pointer.id; // TODO not sure it's a good idea (?)
-        }
-        else if ( this.isSymbolPointer() ) {
-            return this.pointer.value;
-        }
-        else if ( this.isLiteralPointer() ) {
-            return this.pointer.value;
-        }
-        else {
-            throw new Error("Unexpected pointed type:"+this.pointer);
-        }
-    }
-
     /**
      * Return a clone of the current pointed graph in another store.
      * This is useful to edit a pointed graph.

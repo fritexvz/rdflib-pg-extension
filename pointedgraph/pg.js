@@ -94,17 +94,17 @@ $rdf.PG.Utils = {
     },
 
     getLiteralNodes: function(pg, relSym) {
-        return _.chain(pgUtils.getNodes(pg,relSym))
+        return _.chain($rdf.PG.Utils.getNodes(pg,relSym))
             .filter($rdf.PG.Utils.isLiteralNode)
             .value();
     },
     getSymbolNodes: function(pg, relSym) {
-        return _.chain(pgUtils.getNodes(pg,relSym))
+        return _.chain($rdf.PG.Utils.getNodes(pg,relSym))
             .filter($rdf.PG.Utils.isSymbolNode)
             .value();
     },
     getBlankNodes: function(pg, relSym) {
-        return _.chain(pgUtils.getNodes(pg,relSym))
+        return _.chain($rdf.PG.Utils.getNodes(pg,relSym))
             .filter($rdf.PG.Utils.isBlankNode)
             .value();
     },

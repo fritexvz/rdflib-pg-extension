@@ -5,8 +5,12 @@
     <script src="http://code.jquery.com/jquery-1.11.0.js"></script>
     <script src="http://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.5.2/underscore-min.js"></script>
     <script src="http://cdnjs.cloudflare.com/ajax/libs/q.js/0.9.2/q.js"></script>
+    <script src="http://cdnjs.cloudflare.com/ajax/libs/rxjs/2.2.10/rx.lite.js"></script>
+
     <script src="../../releases/0.1.0/rdflib-stample-0.1.0.js"></script>
-    <script src="../../releases/0.1.0/rdflib-stample-pg-extension-0.1.0.js"></script>
+    <script src="../pg.js"></script>
+    <script src="../fetcherWithPromise.js"></script>
+    <script src="../pointedGraph.js"></script>
 </head>
 <body>
 
@@ -23,6 +27,8 @@
     // pointer graphs with the same underlying document/namedGraph.
     var henryFoafProfileUrl = "http://bblfish.net/people/henry/card#me";
 
+    var friendCounter=0;
+
     // You can fetch it, it returns a Q promise of pointed graph.
     // The pointer will be Henry's foaf:Person subject
     store.fetcher.fetch(henryFoafProfileUrl)
@@ -32,7 +38,6 @@
             .fail(function(fetchError) {
                 console.warn("Can't fetch the pointed graph at",henryFoafProfileUrl,fetchError);
             });
-
 
     function printPersonFriendNames(personPg) {
         // get the list of pointed graphs that points to henry's friend in the local document
@@ -54,6 +59,8 @@
                     // Finally we can print the name of all Henry's friends
                     var friendName = remoteFriendPg.relFirst(FOAF("name")).pointer.toString();;
                     $("#friendList").append("<li>"+friendName+"</li>")
+                    friendCounter++;
+                    $("#counter").html(friendCounter);
                 }).fail(function (jumpError) {
                     console.warn("Error during jump from ",localFriendPg.printSummary(),jumpError);
                 });
@@ -62,9 +69,8 @@
 </script>
 
 <div>
-    <ul id="friendList">
-
-    </ul>
+    <h3>Nb friends = <span id="counter"/></h3>
+    <ul id="friendList"/>
 </div>
 
 </body>

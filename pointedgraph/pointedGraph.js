@@ -23,7 +23,7 @@ $rdf.pointedGraph = function(store, pointer, namedGraphUrl) {
 
 
 $rdf.PointedGraph = function() {
-    $rdf.PointedGraph = function(store, pointer, namedGraphUrl){
+    $rdf.PointedGraph = function(store, pointer, namedGraphUrl) {
         // TODO assert the  pointer is a node
         $rdf.PG.Utils.checkArgument( $rdf.PG.Utils.isFragmentlessSymbol(namedGraphUrl),"The namedGraphUrl should be a fragmentless symbol! -> "+namedGraphUrl);
         this.store = store;
@@ -154,30 +154,62 @@ $rdf.PointedGraph = function() {
         return pgList;
     }
 
+    $rdf.PointedGraph.prototype.defaultJumpErrorCallback = function(jumpError) {
+        console.debug("PG jump error",jumpError);
+    }
 
     /**
      * This permits to follow a relation in the local graph and then jump asynchronously.
      * This produces a stream of pointed graphs in the form of an RxJs Observable
      * @param Observable[PointedGraph]
+     * @param onJumpError
      */
-    $rdf.PointedGraph.prototype.jumpRelObservable = function(relUri) {
-        var self = this;
-        var pgList = self.rel(relUri);
-        return Rx.Observable.create(function observerFunction(observer) {
-            pgList.map(function(pg) {
-                pg.jumpAsync().then(
-                    function (jumpedPG) {
-                        observer.onNext(jumpedPG);
-                    },
-                    function (jumpError) {
-                        // TODO how to handle this correctly? should we send errors with onNext????
-                        // can't call onError here because it stops the Observable to work on the first error :(
-                        // observer.onError(jumpError);
-                        console.warn("jumpRelObservable jumpAsync error",jumpError);
+    $rdf.PointedGraph.prototype.jumpRelObservable = function(relUri,onJumpErrorCallback) {
+        var onJumpErrorCallback = onJumpErrorCallback || this.defaultJumpErrorCallback;
+        var pgList = this.rel(relUri);
+        if ( pgList.length == 0 ) {
+            return Rx.Observable.empty();
+        }
+        var i = 0;
+        var subject = new Rx.ReplaySubject();
+        pgList.map(function(pg) {
+            pg.jumpAsync().then(
+                function (jumpedPG) {
+                    subject.onNext(jumpedPG);
+                    i++;
+                    if ( i == pgList.length ) {
+                        subject.onCompleted();
                     }
-                )
-            });
+                },
+                function (jumpError) {
+                    onJumpErrorCallback(jumpError);
+                    i++;
+                    if ( i == pgList.length ) {
+                        subject.onCompleted();
+                    }
+                }
+            )
         });
+        return subject.asObservable();
+    }
+
+    $rdf.PointedGraph.prototype.jumpRelPathObservable = function(relPath,onJumpErrorCallback) {
+        if ( relPath.length == 0 ) {
+            return Rx.Observable.empty();
+        }
+        else {
+            var headRel = relPath[0];
+            var tailRel = relPath.slice(1);
+            var headStream = this.jumpRelObservable(headRel,onJumpErrorCallback);
+            if ( tailRel.length == 0 ) {
+                return headStream;
+            }
+            else {
+                return headStream.flatMap(function(pg) {
+                    return pg.jumpRelPathObservable(tailRel,onJumpErrorCallback);
+                })
+            }
+        }
     }
 
     /**
@@ -282,6 +314,11 @@ $rdf.PointedGraph = function() {
         if (l.length > 0) return l[0];
     }
 
+    $rdf.PointedGraph.prototype.revFirst = function(relUri) {
+        var l = this.rev(relUri);
+        if (l.length > 0) return l[0];
+    }
+
     // Interaction with the PGs.
     $rdf.PointedGraph.prototype.delete = function(relUri, value) {
         var query =
@@ -368,7 +405,7 @@ $rdf.PointedGraph = function() {
      * Once the edit is validated it may be nice to merge the small temporary edited store
      * to the original big store.
      */
-    // TODO need better name
+        // TODO need better name
     $rdf.PointedGraph.prototype.deepCopyOfGraph = function() {
         var self = this;
         var triples = this.store.statementsMatching(undefined, undefined, undefined, this.namedGraphFetchUrl);
@@ -480,7 +517,7 @@ $rdf.PointedGraph = function() {
      * @returns {$rdf.PointedGraph}
      */
     $rdf.PointedGraph.prototype.withPointer = function(newPointer) {
-        return new $rdf.PointedGraph(this.store, newPointer, this.namedGraphUrl, this.namedGraphFetchUrl);
+        return new $rdf.PointedGraph(this.store, newPointer, this.namedGraphUrl, this.namedGraphFetchUrl, this.jumpHistory);
     }
 
     /**

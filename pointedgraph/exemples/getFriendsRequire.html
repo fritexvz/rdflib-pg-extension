@@ -50,10 +50,13 @@
                 var store = rdflibPg.createNewStore(fetcherTimeout);
                 var henryFoafProfileUrl = "http://bblfish.net/people/henry/card#me";
 
+                var friendCounter=0;
+
                 store.fetcher.fetch(henryFoafProfileUrl)
                         .then(function(henryPg) {
                             printPersonFriendNames(henryPg);
                         });
+
 
                 function printPersonFriendNames(personPg) {
                     var localFriendPgs = personPg.rel( FOAF("knows") );
@@ -65,9 +68,10 @@
                 function jumpAndPrintName(localFriendPg) {
                     localFriendPg.jumpAsync()
                             .then(function(remoteFriendPg) {
-                                console.debug("Jumped to friend pointed graph",remoteFriendPg);
                                 var friendName = remoteFriendPg.relFirst(FOAF("name")).pointer.toString();;
                                 $("#friendList").append("<li>"+friendName+"</li>")
+                                friendCounter++;
+                                $("#counter").html(friendCounter);
                             }).fail(function (jumpError) {
                                 console.warn("Error during jump from ",localFriendPg.printSummary(),jumpError);
                             });
@@ -80,9 +84,8 @@
 
 
 <div>
-    <ul id="friendList">
-
-    </ul>
+    <h3>Nb friends = <span id="counter"/>0</h3>
+    <ul id="friendList"/>
 </div>
 
 </body>

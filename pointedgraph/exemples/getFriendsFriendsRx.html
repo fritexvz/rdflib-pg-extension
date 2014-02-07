@@ -5,10 +5,12 @@
     <script src="http://code.jquery.com/jquery-1.11.0.js"></script>
     <script src="http://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.5.2/underscore-min.js"></script>
     <script src="http://cdnjs.cloudflare.com/ajax/libs/q.js/0.9.2/q.js"></script>
-    <script src="http://cdnjs.cloudflare.com/ajax/libs/rxjs/2.2.10/rx.js"></script>
-    <script src="http://cdnjs.cloudflare.com/ajax/libs/rxjs/2.2.10/rx.async.js"></script>
+    <script src="http://cdnjs.cloudflare.com/ajax/libs/rxjs/2.2.10/rx.lite.js"></script>
+
     <script src="../../releases/0.1.0/rdflib-stample-0.1.0.js"></script>
-    <script src="../../releases/0.1.0/rdflib-stample-pg-extension-0.1.0.js"></script>
+    <script src="../pg.js"></script>
+    <script src="../fetcherWithPromise.js"></script>
+    <script src="../pointedGraph.js"></script>
 </head>
 <body>
 
@@ -22,36 +24,42 @@
     var store = $rdf.PG.createNewStore(fetcherTimeout);
     var henryFoafProfileUrl = "http://bblfish.net/people/henry/card#me";
 
+    var friendCounter = 0;
+
     store.fetcher.fetch(henryFoafProfileUrl)
             .then(function(henryPg) {
-                printFriendName(henryPg);
+                printFriendFriendName(henryPg);
             })
             .fail(function(fetchError) {
                 console.warn("Can't fetch the pointed graph at",henryFoafProfileUrl,fetchError);
             });
 
-    function printFriendName(personPg) {
-        personPg.jumpRelObservable( FOAF("knows") )
-                .flatMap(function(remoteFriendPg) {
-                    return remoteFriendPg.jumpRelObservable( FOAF("knows") );
-                })
-                .flatMap(function(remoteFriendFrientPg) {
-                    return Rx.Observable.fromArray( remoteFriendFrientPg.rel(FOAF("name")) );
-                })
-                .subscribe(function(remoteFriendFriendPgName) {
+    function printFriendFriendName(personPg) {
+        var personFriendFriendNameStream = personPg.jumpRelPathObservable([FOAF("knows"),FOAF("knows"),FOAF("name")]);
+
+        personFriendFriendNameStream.subscribe(
+                function(remoteFriendFriendPgName) {
                     var friendFriendName = remoteFriendFriendPgName.pointer.toString();
                     $("#friendList").append("<li>"+friendFriendName+"</li>")
-                });
+                    friendCounter++;
+                    $("#counter").html(friendCounter);
+                },
+                function(error) {
+                     console.warn("Unexpected end of stream",error);
+                },
+                function() {
+                    $("#end").html(" -> End");
+                }
+        );
+
     }
 
 </script>
 
 <div>
-    <ul id="friendList">
-
-    </ul>
+    <h3>Nb friends = <span id="counter">0</span><span id="end"/></h3>
+    <ul id="friendList"/>
 </div>
-
 
 </body>
 </html>

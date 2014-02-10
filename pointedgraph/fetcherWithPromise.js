@@ -111,10 +111,7 @@ $rdf.Fetcher.prototype.fetch = function(uri, referringTerm, force) {
     // in both case we are interested in the answer
     else if ( uriFetchState == 'requested' || uriFetchState == 'unrequested' ) {
         if ( uriFetchState == 'requested') {
-            // TODO this needs to be tested and may not work well,
-            // we may not have already encountered this situation already
-            console.error("This code may not work: please tell me if it does when you test it hahaha :)");
-            console.info("A request is already being done for",docUriToFetch," -> will wait for that response");
+            console.debug("A request is already being done for",docUriToFetch," -> will wait for that response");
         }
         var deferred = Q.defer();
         self.addCallback('done', function fetchDoneCallback(uriFetched) {
@@ -133,7 +130,6 @@ $rdf.Fetcher.prototype.fetch = function(uri, referringTerm, force) {
         });
 
         if (uriFetchState == 'unrequested') {
-            // console.debug("Will try to fetch a document that has not yet been fetched;",docUri);
             var result = self.requestURI(docUriToFetch, referringTerm, force);
             if (result == null) {
                 // TODO not sure of the effect of this line. This may cause the promise to be resolved twice no?

@@ -125,6 +125,17 @@ $rdf.PointedGraph = function() {
     }
 
     /**
+     * Like rel but does not return pointed graphs but simply the objects part of the predicates.
+     * @param rel
+     * @return {*}
+     */
+    $rdf.PointedGraph.prototype.relObjects = function (rel) {
+        $rdf.PG.Utils.checkArgument( $rdf.PG.Utils.isSymbolNode(rel) , "The argument should be a symbol:"+rel);
+        var resList = this.getCurrentDocumentTriplesMatching(this.pointer, rel, undefined, false);
+        return _.chain(resList).map($rdf.PG.Transformers.literalPointerToValue).value();
+    }
+
+    /**
      * This is the reverse of "rel": this permits to know which PG in the current graph/document points to the given pointer
      * @param  {$rdf.sym} rel the relation to this node
      * @returns {[PointedGraph]} of PointedGraphs with the same graph name in the same store
@@ -155,7 +166,7 @@ $rdf.PointedGraph = function() {
     }
 
     $rdf.PointedGraph.prototype.defaultJumpErrorCallback = function(jumpError) {
-        console.debug("PG jump error",jumpError);
+        console.debug("PG jump error",jumpError );
     }
 
     /**
@@ -193,6 +204,18 @@ $rdf.PointedGraph = function() {
         return subject.asObservable();
     }
 
+
+
+    $rdf.PointedGraph.prototype.followPath = function(relPath,onJumpErrorCallback) {
+        return this.jumpRelPathObservable(relPath,onJumpErrorCallback);
+    }
+
+    /**
+     * Permits to follow a relation/predicate path, jumping from one document to another when it's needed
+     * @param relPath
+     * @param onJumpErrorCallback optional callback to handle jump errors, because they are not emitted in the stream
+     * @return {*}
+     */
     $rdf.PointedGraph.prototype.jumpRelPathObservable = function(relPath,onJumpErrorCallback) {
         if ( relPath.length == 0 ) {
             return Rx.Observable.empty();
@@ -481,6 +504,17 @@ $rdf.PointedGraph = function() {
      */
     $rdf.PointedGraph.prototype.getPointerTriplesMatching = function(rel,object,onlyOne) {
         return this.getCurrentDocumentTriplesMatching(this.pointer, rel, object, onlyOne);
+    }
+
+    /**
+     * Permits to know if there is at least one triple in this graph that matches the pointer, predicate and object
+     * @param rel
+     * @param object
+     * @param onlyOne
+     * @return {boolean}
+     */
+    $rdf.PointedGraph.prototype.hasPointerTripleMatching = function(rel,object) {
+        return this.getPointerTriplesMatching(rel,object,true).length > 0;
     }
 
     /**

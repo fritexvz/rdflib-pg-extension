@@ -25,24 +25,40 @@
     var store = $rdf.PG.createNewStore(fetcherTimeout);
     var henryFoafProfileUrl = "http://bblfish.net/people/henry/card#me";
 
-    var friendCounter=0;
+    var friendCounter = 0;
 
     store.fetcher.fetch(henryFoafProfileUrl)
             .then(function(henryPg) {
-                printFriendNames(henryPg);
+                printPotentialFriendNames(henryPg);
             })
             .fail(function(fetchError) {
                 console.warn("Can't fetch the pointed graph at",henryFoafProfileUrl,fetchError);
             });
 
-    function printFriendNames(personPg) {
-        var personFriendStream = personPg.jumpRelObservable( FOAF("knows") );
+    function printPotentialFriendNames(personPg) {
 
-        var personFriendNameStream = personFriendStream.flatMap(function(friendPg) {
-            return Rx.Observable.fromArray( friendPg.rel(FOAF("name")) ).take(1);
+        var personDoesntKnowHimFilter = function(himPg) {
+            var personKnowHim = personPg.hasPointerTripleMatching( FOAF("knows") , himPg.pointer );
+            return !personKnowHim;
+        };
+
+        var heKnowsPersonFilter = function(hePg) {
+            return hePg.hasPointerTripleMatching( FOAF("knows") , personPg.pointer);
+        };
+
+        var potentialFriendStream = personPg.followPath( [FOAF("knows"), FOAF("knows")])
+                .filter($rdf.PG.Filters.isSymbolPointer)
+                .distinct(function (pg) {
+                    return $rdf.PG.Transformers.symbolPointerToValue(pg);
+                })
+                .filter(personDoesntKnowHimFilter)
+                .filter(heKnowsPersonFilter);
+
+        var potentialFriendNameStream = potentialFriendStream.flatMap(function(potentialFriendPg) {
+            return potentialFriendPg.followPath( [FOAF("name")]).take(1);
         });
 
-        handleNameStream(personFriendNameStream);
+        handleNameStream(potentialFriendNameStream);
     }
 
     function handleNameStream(nameStream) {
@@ -68,7 +84,6 @@
     <h3>Nb friends = <span id="counter">0</span><span id="end"/></h3>
     <ul id="friendList"/>
 </div>
-
 
 </body>
 </html>

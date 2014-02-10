@@ -147,6 +147,17 @@ $rdf.PG.Transformers = {
     },
     symbolPointerToValue: function(pg) {
         return $rdf.PG.Utils.symbolNodeToUrl(pg.pointer);
+    },
+
+    tripleToSubject: function(triple) {
+        return triple.subject;
+    },
+    tripleToPredicate: function(triple) {
+        return triple.predicate;
+    },
+    tripleToObject: function(triple) {
+        return triple.object;
     }
+
 }
 

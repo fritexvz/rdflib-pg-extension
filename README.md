@@ -46,8 +46,8 @@ TODO: define an unique ubiquitous language because the RDF world is not easy...
 ## Dependencies:
 - [Q](https://github.com/kriskowal/q)
 - [Underscore](https://github.com/jashkenas/underscore)
-- [JQuery](https://github.com/jquery/jquery) (Recommended) (TODO to document)
-- [RxJs](https://github.com/Reactive-Extensions/RxJS) (Optional. rx.js + js.async.js) (TODO to document)
+- [JQuery](https://github.com/jquery/jquery) 
+- [RxJs](https://github.com/Reactive-Extensions/RxJS) (rx.js + rx.binding.js are required)
 
 ## Exemple
 
@@ -264,7 +264,13 @@ that have not yet been merged to the official rdflib.js master.
  
  Run `make` to generate the dist directory
  This is like the original RDFLib Makefile but it generates an additional rdflib-pg-extension.js
+ 
+ 
+## Help
 
+`#stample` on Freenode (IRC)
+
+Stample google group: https://groups.google.com/forum/#!forum/stample
 
 ## Licence: 
  

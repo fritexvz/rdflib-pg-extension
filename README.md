@@ -108,51 +108,109 @@ function printFriendName(localFriendPg) {
 }
 ```
 
-#### With RxJs Observable
+#### Using RxJs Observable streams
 
-If you are using RxJs it's even simpler to get a stream of friends: you'll receive the friends pointed graphs as the requests come back:
+If you are using RxJs it's even simpler to get a stream of friends: you'll receive the friends pointed graphs as the requests come back.
+
+We will try to print the name of the persons we find. This code will permit to subscribe to the name stream and print it to our page:
 
 ```javascript
-function printFriendName(personPg) {
-    personPg.jumpRelObservable( FOAF("knows") )
-        .flatMap(function(remoteFriendPg) {
-            return Rx.Observable.fromArray( remoteFriendPg.rel(FOAF("name")) );
-        })
-        .subscribe(function(remoteFriendPgName) {
-            var friendName = remoteFriendPgName.pointer.toString();
-            $("#friendList").append("<li>"+friendName+"</li>")
+    function handleNameStream(nameStream) {
+        nameStream.subscribe(
+                function(namePg) {
+                    var friendFriendName = namePg.pointer.toString();
+                    $("#friendList").append("<li>"+friendFriendName+" ("+namePg.getCurrentDocumentUrl()+")</li>")
+                },
+                function(error) {
+                    console.error("Unexpected end of stream",error, error.stack);
+                },
+                function() {
+                    $("#end").html(" -> End");
+                }
+        );
+    }
+```
+
+
+Now see how easy it is to create interesting pointed graph streams.
+
+
+
+```javascript
+    function printFriendNames(personPg) {
+        var personFriendStream = personPg.jumpRelObservable( FOAF("knows") );
+        var personFriendNameStream = personFriendStream.flatMap(function(friendPg) {
+            return Rx.Observable.fromArray( friendPg.rel(FOAF("name")) ).take(1);
         });
-}
+        handleNameStream(personFriendNameStream);
+    }
+    
+    printFriendNames(henryPg);
 ```
 
-But you'll have to understand some functional operators on streams like the flatMap operator to be able to use it efficiently.
-You will find great help in the Coursera course: [Functional Reactive Programming in Scala](https://www.coursera.org/course/reactive).
-
-This is very powerful, now just imagine I do not want to print the Henry's friend names, but I want to print the name of the friends of the friends of Henry. This is not much complicated to get a stream on that! Just 3 additional lines!
+We have also made some recursive code to make it easier to use.
+You can follow a path of RDF predicates:
 
 ```javascript
-function printFriendName(personPg) {
-    personPg.jumpRelObservable( FOAF("knows") )
-    .flatMap(function(remoteFriendPg) {
-        return remoteFriendPg.jumpRelObservable( FOAF("knows") );
-    })
-    .flatMap(function(remoteFriendFrientPg) {
-        return Rx.Observable.fromArray( remoteFriendFrientPg.rel(FOAF("name")) );
-    })
-    .subscribe(function(remoteFriendFriendPgName) {
-        var friendFriendName = remoteFriendFriendPgName.pointer.toString();
-        $("#friendList").append("<li>"+friendFriendName+"</li>")
-    });
-}
+    function printFriendFriendName(personPg) {
+        var personFriendFriendNameStream = personPg.followPath( [FOAF("knows"), FOAF("knows"), FOAF("knows"), FOAF("name") ]);
+        handleNameStream(personFriendFriendNameStream);
+    }
 ```
 
-Of course you'll have to handle duplicate names because you may receive multiple time the same friend name...
+Cool isn't it?
+
+
+Now let's try an advanced exemple: we want to build a very simple friend recommender engine.
+If a friend of you has another friend and this friend knows you, it is very probable that you also know him. So if he's not your friend yet, you might want to add him as a friend to your foaf profile.
+Here is the code to get a stream on that potential friend list:
+
+```javascript
+    function printPotentialFriendNames(personPg) {
+
+        var personDoesntKnowHimFilter = function(himPg) {
+            var personKnowHim = personPg.hasPointerTripleMatching( FOAF("knows") , himPg.pointer );
+            return !personKnowHim;
+        };
+
+        var heKnowsPersonFilter = function(hePg) {
+            return hePg.hasPointerTripleMatching( FOAF("knows") , personPg.pointer);
+        };
+
+        var potentialFriendStream = personPg.followPath( [FOAF("knows"), FOAF("knows")])
+                .filter($rdf.PG.Filters.isSymbolPointer)
+                .distinct(function (pg) {
+                    return $rdf.PG.Transformers.symbolPointerToValue(pg);
+                })
+                .filter(personDoesntKnowHimFilter)
+                .filter(heKnowsPersonFilter);
+
+        var potentialFriendNameStream = potentialFriendStream.flatMap(function(potentialFriendPg) {
+            return potentialFriendPg.followPath( [FOAF("name")] ).take(1);
+        });
+
+        handleNameStream(potentialFriendNameStream);
+    }
+```
+
+As you can see, we just have to filter the initial stream obtained from the path [FOAF("knows"), FOAF("knows")].
+We do not want to have duplicate suggestions and we only want to display one name per user (ignoring people having no name). 
+
+Running this exemple with `henryPg` we can find out that he may want to add 2 friends.
+
+
+
+**Getting started with RxJs**
+
+To use RxJs, you'll have to understand some functional operators on streams like the flatMap operator to be able to use it efficiently.
+You will find great help in the Coursera course: [Functional Reactive Programming in Scala](https://www.coursera.org/course/reactive).
 
 #### Other exemples?
 
 You can find how we use our own library in this [react-foaf](https://github.com/stample/react-foaf) project.
 
 Look at the code documentation, there's not much more methods but the it's just a preview of what you'll be able to do. Coming soon: how to edit graphs for the RWW world.
+
 
 ### Try it
 

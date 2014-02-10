@@ -212,13 +212,15 @@ You can find how we use our own library in this [react-foaf](https://github.com/
 Look at the code documentation, there's not much more methods but the it's just a preview of what you'll be able to do. Coming soon: how to edit graphs for the RWW world.
 
 
-### Try it
+## Try it
 
 These working exemples can be found [here](https://github.com/stample/rdflib.js/tree/master/pointedgraph/exemples).
 Just clone the repo and open the html files in your browser.
 
 There's also an exemple of [using requireJS](https://github.com/stample/rdflib.js/blob/master/pointedgraph/exemples/getFriendsRequire.html
 ).
+
+You can also play with this prebuilt [JsFiddle](http://jsfiddle.net/D5Gqs/4/)
 
 ## CORS Proxy
 

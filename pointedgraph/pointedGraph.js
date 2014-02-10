@@ -204,8 +204,12 @@ $rdf.PointedGraph = function() {
         return subject.asObservable();
     }
 
-
-
+    /**
+     * Just an alias for jumpRelPathObservable
+     * @param relPath
+     * @param onJumpErrorCallback
+     * @return {*}
+     */
     $rdf.PointedGraph.prototype.followPath = function(relPath,onJumpErrorCallback) {
         return this.jumpRelPathObservable(relPath,onJumpErrorCallback);
     }
